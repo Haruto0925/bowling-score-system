@@ -1,0 +1,17 @@
+{
+  "name": "社内ボウリング大会",
+  "short_name": "ボウリング大会",
+  "description": "社内ボウリング大会のスコア・ハンデ・チーム順位を管理するアプリ",
+  "lang": "ja",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b3d91",
+  "theme_color": "#0b3d91",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

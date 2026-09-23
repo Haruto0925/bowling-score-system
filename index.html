@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="ボウリング大会" />
+<meta name="theme-color" content="#0b3d91" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="icon" href="icons/icon-192.png" />
+<title>社内ボウリング大会</title>
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --primary:#0b3d91;
+    --primary-2:#1657c9;
+    --accent:#ff6b1a;
+    --danger:#d93025;
+    --success:#1e8e3e;
+    --text:#111827;
+    --sub:#6b7280;
+    --border:#e5e7eb;
+    --pin:#fefefe;
+    --stripe:#f9fafb;
+    --shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+    font-size:16px;line-height:1.5;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  header{
+    background:linear-gradient(135deg,var(--primary),var(--primary-2));
+    color:#fff;padding:14px 16px;
+    position:sticky;top:0;z-index:20;
+    box-shadow:var(--shadow);
+    padding-top:calc(14px + env(safe-area-inset-top));
+  }
+  header h1{font-size:18px;margin:0;display:flex;align-items:center;gap:8px}
+  header h1 .emoji{font-size:22px}
+  main{padding:12px 12px 96px 12px;max-width:720px;margin:0 auto}
+  .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin-bottom:14px}
+  h2{font-size:17px;margin:0 0 10px 0;color:var(--primary);border-left:5px solid var(--primary);padding-left:8px}
+  h3{font-size:15px;margin:12px 0 6px;color:#374151}
+  label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  input[type=text],input[type=date],input[type=number],select{
+    width:100%;padding:12px;font-size:16px;border:1px solid var(--border);
+    border-radius:10px;background:#fff;
+  }
+  input[type=number]{ -moz-appearance:textfield }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0 }
+  .row{display:flex;gap:8px;align-items:center}
+  .row > *{flex:1}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    padding:14px 16px;border:none;border-radius:12px;
+    font-size:16px;font-weight:700;color:#fff;background:var(--primary);
+    cursor:pointer;min-height:48px;width:100%;
+  }
+  .btn.accent{background:var(--accent)}
+  .btn.danger{background:var(--danger)}
+  .btn.gray{background:#6b7280}
+  .btn.ghost{background:#fff;color:var(--primary);border:2px solid var(--primary)}
+  .btn.sm{padding:8px 10px;font-size:13px;min-height:36px;width:auto}
+  .btn:active{transform:scale(.98)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:#eef2ff;color:var(--primary);margin-right:4px}
+  .tag.team{background:#fff4e6;color:#c2410c}
+  .tag.hd{background:#e6f4ea;color:var(--success)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:center}
+  th{background:var(--stripe);color:#374151;font-weight:600}
+  tr:nth-child(even) td{background:#fafafa}
+  .num{font-variant-numeric:tabular-nums;font-weight:600}
+  .empty{color:var(--sub);text-align:center;padding:20px 0;font-size:14px}
+  .list-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fff}
+  .list-item .name{font-weight:700}
+  .list-item .meta{font-size:12px;color:var(--sub)}
+  .score-card{border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px;background:#fff}
+  .score-card .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .score-card .head .nm{font-weight:700;font-size:15px}
+  .score-card .head .sub{font-size:12px;color:var(--sub)}
+  .score-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .score-inputs label{font-size:11px;text-align:center;margin-bottom:2px}
+  .score-inputs input{padding:12px 4px;font-size:20px;text-align:center;font-weight:700}
+  .rank1{background:#fff9db !important}
+  .rank2{background:#f1f3f5 !important}
+  .rank3{background:#ffe8cc !important}
+  .rank-badge{display:inline-block;width:26px;height:26px;line-height:26px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:13px}
+  .rank-badge.g{background:#e0a800}
+  .rank-badge.s{background:#868e96}
+  .rank-badge.b{background:#c47b3f}
+  nav.tabbar{
+    position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);
+    display:flex;justify-content:space-around;z-index:30;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav.tabbar button{
+    flex:1;background:none;border:none;padding:8px 2px;font-size:11px;color:var(--sub);
+    display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;
+  }
+  nav.tabbar button .ic{font-size:22px}
+  nav.tabbar button.active{color:var(--primary);font-weight:700}
+  .banner{background:#fff4e6;border-left:4px solid var(--accent);padding:10px;border-radius:8px;font-size:13px;color:#7c2d12;margin-bottom:10px}
+  .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .modal-mask.show{display:flex}
+  .modal{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:88vh;overflow:auto;padding:16px}
+  .modal h3{margin-top:0}
+  .divider{height:1px;background:var(--border);margin:10px 0}
+  .chip{display:inline-block;padding:6px 10px;border-radius:20px;background:#eef2ff;color:var(--primary);margin:4px 4px 0 0;font-size:13px;border:1px solid #dbe4ff}
+  .chip.sel{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .chip.team{background:#fff4e6;color:#c2410c;border-color:#ffd8b5}
+  details{border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:8px;background:#fff}
+  details[open] summary{margin-bottom:8px}
+  summary{cursor:pointer;font-weight:600;font-size:14px}
+  .small{font-size:12px;color:var(--sub)}
+  .center{text-align:center}
+  .footer{color:var(--sub);font-size:11px;text-align:center;padding:12px 0}
+  .pill{display:inline-block;background:#111827;color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="emoji">🎳</span>社内ボウリング大会</h1>
+</header>
+
+<main id="app">
+  <!-- 動的に描画 -->
+</main>
+
+<nav class="tabbar">
+  <button data-tab="home"><span class="ic">🏠</span>ホーム</button>
+  <button data-tab="members"><span class="ic">👥</span>メンバー</button>
+  <button data-tab="setup"><span class="ic">⚙️</span>大会設定</button>
+  <button data-tab="score"><span class="ic">📝</span>スコア</button>
+  <button data-tab="result"><span class="ic">🏆</span>結果</button>
+  <button data-tab="history"><span class="ic">📚</span>履歴</button>
+</nav>
+
+<div class="modal-mask" id="modal">
+  <div class="modal" id="modal-body"></div>
+</div>
+
+<script>
+/* =====================================================
+   社内ボウリング大会スコア管理アプリ
+   ・localStorage 永続化
+   ・PWA 対応
+   ・iPhone Safari 最適化
+   ===================================================== */
+
+const LS_KEY = "bowling_app_v1";
+
+// ---------- データ層 ----------
+const DB = {
+  data: {
+    members: [],       // {id, name, createdAt}
+    tournaments: [],   // 完了大会 {id, name, date, teams:[[memberId,...]], results:{memberId:{g1,g2,g3,handicap}}, savedAt}
+    current: null,     // 進行中の大会（tournaments と同じ構造 + 途中でもOK）
+  },
+  load(){
+    try{
+      const s = localStorage.getItem(LS_KEY);
+      if(s) this.data = JSON.parse(s);
+    }catch(e){ console.error(e); }
+    if(!this.data.members) this.data.members = [];
+    if(!this.data.tournaments) this.data.tournaments = [];
+    if(this.data.current === undefined) this.data.current = null;
+  },
+  save(){
+    localStorage.setItem(LS_KEY, JSON.stringify(this.data));
+  }
+};
+
+// ---------- ユーティリティ ----------
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const $ = (sel, el=document) => el.querySelector(sel);
+const el = (html) => { const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstElementChild; };
+const esc = (s) => (s??"").toString().replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate = (d) => {
+  if(!d) return "";
+  try{ const dt=new Date(d); if(isNaN(dt)) return d;
+    return `${dt.getFullYear()}/${(dt.getMonth()+1).toString().padStart(2,"0")}/${dt.getDate().toString().padStart(2,"0")}`;
+  }catch(e){ return d; }
+};
+
+// ---------- ハンデ計算 ----------
+// 直近3大会の全ゲーム平均 → ハンデ = max(0, 150 - 平均)
+function calcHandicap(memberId){
+  const past = DB.data.tournaments.slice().sort((a,b)=> (b.date||"").localeCompare(a.date||"")).slice(0,3);
+  let scores = [];
+  for(const t of past){
+    const r = t.results?.[memberId];
+    if(!r) continue;
+    for(const g of ["g1","g2","g3"]){
+      const v = Number(r[g]);
+      if(!isNaN(v) && v>0) scores.push(v);
+    }
+  }
+  if(scores.length===0) return { handicap: 0, avg: null, games: 0, note: "過去データなし" };
+  const avg = scores.reduce((a,b)=>a+b,0)/scores.length;
+  const hd = Math.max(0, Math.round(150 - avg));
+  return { handicap: hd, avg: Math.round(avg*10)/10, games: scores.length, note: past.length + "大会分" };
+}
+
+// ---------- タブ制御 ----------
+let currentTab = "home";
+function setTab(t){
+  currentTab = t;
+  document.querySelectorAll("nav.tabbar button").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab===t);
+  });
+  render();
+  window.scrollTo({top:0, behavior:"instant"});
+}
+document.querySelectorAll("nav.tabbar button").forEach(b=>{
+  b.addEventListener("click", ()=> setTab(b.dataset.tab));
+});
+
+// ---------- モーダル ----------
+function openModal(html){
+  $("#modal-body").innerHTML = html;
+  $("#modal").classList.add("show");
+}
+function closeModal(){ $("#modal").classList.remove("show"); }
+$("#modal").addEventListener("click", (e)=>{ if(e.target.id==="modal") closeModal(); });
+
+// ---------- 描画：ホーム ----------
+function renderHome(){
+  const cur = DB.data.current;
+  const members = DB.data.members.length;
+  const totalTournaments = DB.data.tournaments.length;
+  let curHtml = "";
+  if(cur){
+    curHtml = `
+      <div class="card">
+        <h2>🎯 進行中の大会</h2>
+        <div style="font-size:18px;font-weight:700">${esc(cur.name||"（無題の大会）")}</div>
+        <div class="small">開催日：${esc(fmtDate(cur.date))} ／ 参加者：${cur.participants.length}人 ／ チーム数：${cur.teams.length}</div>
+        <div class="divider"></div>
+        <div class="grid2">
+          <button class="btn" onclick="setTab('score')">📝 スコア入力へ</button>
+          <button class="btn ghost" onclick="setTab('result')">🏆 途中経過</button>
+        </div>
+      </div>`;
+  }else{
+    curHtml = `
+      <div class="card">
+        <h2>🎯 現在の大会</h2>
+        <div class="empty">進行中の大会はありません。</div>
+        <button class="btn accent" onclick="setTab('setup')">➕ 新しい大会を作成</button>
+      </div>`;
+  }
+  return `
+    ${curHtml}
+    <div class="card">
+      <h2>📊 サマリー</h2>
+      <div class="grid3">
+        <div class="center"><div class="small">登録メンバー</div><div class="num" style="font-size:24px">${members}</div></div>
+        <div class="center"><div class="small">開催済み大会</div><div class="num" style="font-size:24px">${totalTournaments}</div></div>
+        <div class="center"><div class="small">基準点</div><div class="num" style="font-size:24px">150</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>ℹ️ 使い方</h2>
+      <ol style="padding-left:18px;margin:6px 0">
+        <li>「メンバー」で参加者を登録</li>
+        <li>「大会設定」で大会名・参加者・チームを決定</li>
+        <li>「スコア」で3ゲーム分を入力</li>
+        <li>「結果」で個人・チーム順位を確認 → 保存</li>
+      </ol>
+      <div class="small">※ ハンデは基準点150。直近3大会の平均から自動計算されます。</div>
+    </div>
+    <div class="footer">v1.0 / データはこの端末に保存されます</div>
+  `;
+}
+
+// ---------- 描画：メンバー ----------
+function renderMembers(){
+  const list = DB.data.members.slice().sort((a,b)=> a.name.localeCompare(b.name,"ja"));
+  const itemsHtml = list.length===0
+    ? `<div class="empty">まだメンバーがいません。下から追加してください。</div>`
+    : list.map(m=>{
+        const hd = calcHandicap(m.id);
+        return `
+          <div class="list-item">
+            <div>
+              <div class="name">${esc(m.name)}</div>
+              <div class="meta">
+                <span class="tag hd">ハンデ ${hd.handicap}</span>
+                <span class="tag">平均 ${hd.avg??"—"}</span>
+                <span class="tag">${hd.games}ゲーム分</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn sm ghost" onclick="showPlayerDetail('${m.id}')">詳細</button>
+              <button class="btn sm danger" onclick="removeMember('${m.id}')">削除</button>
+            </div>
+          </div>`;
+      }).join("");
+  return `
+    <div class="card">
+      <h2>👥 メンバー管理</h2>
+      <label>名前</label>
+      <div class="row">
+        <input type="text" id="new-member" placeholder="例：山田 太郎" autocomplete="off"/>
+        <button class="btn accent" style="max-width:120px" onclick="addMember()">➕ 追加</button>
+      </div>
+      <div class="small" style="margin-top:6px">※ 同名でも別メンバーとして追加できます。</div>
+    </div>
+    <div class="card">
+      <h2>📋 メンバー一覧 (${list.length}人)</h2>
+      ${itemsHtml}
+    </div>
+  `;
+}
+function addMember(){
+  const inp = $("#new-member");
+  const name = (inp.value||"").trim();
+  if(!name){ alert("名前を入力してください。"); return; }
+  DB.data.members.push({ id: uid(), name, createdAt: Date.now() });
+  DB.save();
+  render();
+}
+function removeMember(id){
+  const m = DB.data.members.find(x=>x.id===id);
+  if(!m) return;
+  if(!confirm(`「${m.name}」を削除しますか？\n※ 過去大会の履歴データは残ります。`)) return;
+  DB.data.members = DB.data.members.filter(x=>x.id!==id);
+  // 現在大会からも外す
+  if(DB.data.current){
+    DB.data.current.participants = DB.data.current.participants.filter(x=>x!==id);
+    DB.data.current.teams = DB.data.current.teams.map(t=> t.filter(x=>x!==id));
+    if(DB.data.current.results) delete DB.data.current.results[id];
+  }
+  DB.save();
+  render();
+}
+
+// ---------- 描画：大会設定 ----------
+function ensureCurrent(){
+  if(!DB.data.current){
+    DB.data.current = {
+      id: uid(),
+      name: "",
+      date: new Date().toISOString().slice(0,10),
+      participants: [],
+      teams: [[]],
+      results: {},
+      handicaps: {}, // 大会開始時点で確定
+      started: false,
+    };
+  }
+}
+
+function renderSetup(){
+  ensureCurrent();
+  const c = DB.data.current;
+  const members = DB.data.members;
+  const partSet = new Set(c.participants);
+
+  const memberChips = members.length===0
+    ? `<div class="empty">先に「メンバー」タブで参加者を登録してください。</div>`
+    : members.map(m=>{
+        const sel = partSet.has(m.id);
+        return `<span class="chip ${sel?'sel':''}" onclick="toggleParticipant('${m.id}')">${esc(m.name)}</span>`;
+      }).join("");
+
+  // 各参加者がどのチームか
+  const teamOf = {};
+  c.teams.forEach((t,i)=> t.forEach(mid=> teamOf[mid]=i));
+
+  const teamsHtml = c.teams.map((t,i)=>{
+    const mems = t.map(mid=>{
+      const m = members.find(x=>x.id===mid);
+      return m ? `<span class="chip team" onclick="moveMemberTeam('${mid}')">${esc(m.name)} ↔</span>` : "";
+    }).join(" ");
+    return `
+      <div style="border:1px dashed #ffd8b5;border-radius:10px;padding:8px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b>チーム${i+1}</b>
+          <span class="small">${t.length}人</span>
+        </div>
+        <div style="margin-top:6px">${mems || '<span class="small">（未割当）</span>'}</div>
+      </div>`;
+  }).join("");
+
+  const unassigned = c.participants.filter(id=> teamOf[id]===undefined);
+  const unassignedHtml = unassigned.length ? `
+    <h3>未割当の参加者（タップでチームに追加）</h3>
+    ${unassigned.map(mid=>{
+      const m = members.find(x=>x.id===mid);
+      return m ? `<span class="chip" onclick="assignToNextTeam('${mid}')">${esc(m.name)} ＋</span>`:"";
+    }).join(" ")}
+  `:"";
+
+  return `
+    <div class="card">
+      <h2>⚙️ 大会設定</h2>
+      <label>大会名</label>
+      <input type="text" id="t-name" value="${esc(c.name||"")}" placeholder="例：2026年 秋季ボウリング大会" oninput="updateCurrent('name', this.value)"/>
+      <div style="height:8px"></div>
+      <label>開催日</label>
+      <input type="date" id="t-date" value="${esc(c.date||"")}" oninput="updateCurrent('date', this.value)"/>
+    </div>
+
+    <div class="card">
+      <h2>🙋 参加者選択 (${c.participants.length}人)</h2>
+      ${memberChips}
+    </div>
+
+    <div class="card">
+      <h2>🧩 チーム分け</h2>
+      <div class="row">
+        <div>
+          <label>チーム数</label>
+          <input type="number" id="team-count" min="1" max="20" value="${c.teams.length}" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn ghost" onclick="applyTeamCount()">適用</button>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <button class="btn accent" onclick="autoSplitTeams()">🎲 自動チーム分け（バランス優先）</button>
+      <div style="height:10px"></div>
+      ${teamsHtml}
+      ${unassignedHtml}
+      <div class="small">※ 参加者名をタップすると次のチームへ移動します。</div>
+    </div>
+
+    <div class="card">
+      <h2>🚀 大会開始</h2>
+      <div class="banner">開始時点で各選手のハンデが確定します（大会中は変わりません）。</div>
+      <button class="btn" onclick="startTournament()">▶️ この内容で大会を開始</button>
+      <div style="height:8px"></div>
+      <button class="btn gray" onclick="resetCurrent()">現在の大会設定を破棄</button>
+    </div>
+  `;
+}
+function updateCurrent(k,v){
+  ensureCurrent();
+  DB.data.current[k] = v;
+  DB.save();
+}
+function toggleParticipant(id){
+  ensureCurrent();
+  const c = DB.data.current;
+  if(c.participants.includes(id)){
+    c.participants = c.participants.filter(x=>x!==id);
+    c.teams = c.teams.map(t=> t.filter(x=>x!==id));
+  }else{
+    c.participants.push(id);
+  }
+  DB.save(); render();
+}
+function applyTeamCount(){
+  ensureCurrent();
+  const n = Math.max(1, Math.min(20, parseInt($("#team-count").value)||1));
+  const c = DB.data.current;
+  const flat = c.teams.flat();
+  c.teams = Array.from({length:n}, (_,i)=> []);
+  // なるべく既存の配分を残す
+  flat.forEach((mid,idx)=> c.teams[idx % n].push(mid));
+  DB.save(); render();
+}
+function autoSplitTeams(){
+  ensureCurrent();
+  const c = DB.data.current;
+  if(c.participants.length===0){ alert("参加者を選択してください。"); return; }
+  const n = c.teams.length || 1;
+  // 平均スコア（履歴の平均、無ければ150）でソートして蛇行配分
+  const withAvg = c.participants.map(mid=>{
+    const h = calcHandicap(mid);
+    const avg = h.avg==null ? 150 : h.avg;
+    return { mid, avg };
+  }).sort((a,b)=> b.avg - a.avg);
+  const teams = Array.from({length:n}, ()=> []);
+  withAvg.forEach((p,i)=>{
+    const row = Math.floor(i/n);
+    const col = i%n;
+    const idx = row%2===0 ? col : (n-1-col);
+    teams[idx].push(p.mid);
+  });
+  c.teams = teams;
+  DB.save(); render();
+}
+function moveMemberTeam(mid){
+  const c = DB.data.current;
+  let from=-1;
+  c.teams.forEach((t,i)=>{ if(t.includes(mid)) from=i; });
+  if(from<0) return;
+  c.teams[from] = c.teams[from].filter(x=>x!==mid);
+  const to = (from+1) % c.teams.length;
+  c.teams[to].push(mid);
+  DB.save(); render();
+}
+function assignToNextTeam(mid){
+  const c = DB.data.current;
+  // 最も人数少ないチームへ
+  let minI=0, minN=Infinity;
+  c.teams.forEach((t,i)=>{ if(t.length<minN){ minN=t.length; minI=i; } });
+  c.teams[minI].push(mid);
+  DB.save(); render();
+}
+function startTournament(){
+  ensureCurrent();
+  const c = DB.data.current;
+  if(!c.name){ if(!confirm("大会名が未入力です。このまま開始しますか？")) return; }
+  if(c.participants.length===0){ alert("参加者を選択してください。"); return; }
+  // ハンデ確定
+  c.handicaps = {};
+  c.participants.forEach(mid=>{
+    c.handicaps[mid] = calcHandicap(mid).handicap;
+  });
+  // 未割当を自動で先頭チームへ
+  const assigned = new Set(c.teams.flat());
+  c.participants.forEach(mid=>{
+    if(!assigned.has(mid)) c.teams[0].push(mid);
+  });
+  c.started = true;
+  c.results = c.results || {};
+  c.participants.forEach(mid=>{
+    if(!c.results[mid]) c.results[mid] = { g1:"", g2:"", g3:"" };
+  });
+  DB.save();
+  setTab("score");
+}
+function resetCurrent(){
+  if(!confirm("現在の大会設定を破棄しますか？")) return;
+  DB.data.current = null;
+  DB.save(); render();
+}
+
+// ---------- 描画：スコア入力 ----------
+function renderScore(){
+  const c = DB.data.current;
+  if(!c || !c.started){
+    return `
+      <div class="card">
+        <h2>📝 スコア入力</h2>
+        <div class="empty">大会がまだ開始されていません。</div>
+        <button class="btn" onclick="setTab('setup')">⚙️ 大会設定へ</button>
+      </div>`;
+  }
+  const teamOf = {};
+  c.teams.forEach((t,i)=> t.forEach(mid=> teamOf[mid]=i+1));
+  const rows = c.participants.map(mid=>{
+    const m = DB.data.members.find(x=>x.id===mid);
+    if(!m) return "";
+    const r = c.results[mid] || {g1:"",g2:"",g3:""};
+    const hd = c.handicaps[mid] ?? 0;
+    return `
+      <div class="score-card">
+        <div class="head">
+          <div>
+            <div class="nm">${esc(m.name)}</div>
+            <div class="sub">
+              <span class="tag team">チーム${teamOf[mid]||"-"}</span>
+              <span class="tag hd">ハンデ ${hd}</span>
+            </div>
+          </div>
+        </div>
+        <div class="score-inputs">
+          <div>
+            <label>1G</label>
+            <input type="number" inputmode="numeric" pattern="[0-9]*" min="0" max="300" value="${esc(r.g1)}" oninput="setScore('${mid}','g1',this.value)"/>
+          </div>
+          <div>
+            <label>2G</label>
+            <input type="number" inputmode="numeric" pattern="[0-9]*" min="0" max="300" value="${esc(r.g2)}" oninput="setScore('${mid}','g2',this.value)"/>
+          </div>
+          <div>
+            <label>3G</label>
+            <input type="number" inputmode="numeric" pattern="[0-9]*" min="0" max="300" value="${esc(r.g3)}" oninput="setScore('${mid}','g3',this.value)"/>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  return `
+    <div class="card">
+      <h2>📝 スコア入力</h2>
+      <div class="small">${esc(c.name||"（無題の大会）")} ／ ${esc(fmtDate(c.date))} ／ ${c.participants.length}人</div>
+      <div class="banner">入力すると自動保存されます。0〜300で入力してください。</div>
+    </div>
+    ${rows}
+    <div class="card">
+      <button class="btn accent" onclick="setTab('result')">🏆 結果を見る</button>
+    </div>
+  `;
+}
+function setScore(mid, g, v){
+  const c = DB.data.current;
+  if(!c.results[mid]) c.results[mid] = { g1:"",g2:"",g3:"" };
+  let n = parseInt(v);
+  if(isNaN(n)) { c.results[mid][g]=""; }
+  else{
+    if(n<0) n=0; if(n>300) n=300;
+    c.results[mid][g] = n;
+  }
+  DB.save();
+}
+
+// ---------- 描画：結果 ----------
+function calcResults(c){
+  const teamOf = {};
+  c.teams.forEach((t,i)=> t.forEach(mid=> teamOf[mid]=i+1));
+  // 個人
+  const personal = c.participants.map(mid=>{
+    const m = DB.data.members.find(x=>x.id===mid);
+    const r = c.results[mid] || {};
+    const scores = ["g1","g2","g3"].map(g => Number(r[g])).filter(v=>!isNaN(v)&&v>0);
+    const max = scores.length ? Math.max(...scores) : 0;
+    const hd = c.handicaps[mid] ?? 0;
+    return {
+      mid, name: m?.name||"—", team: teamOf[mid]||"-",
+      g1: Number(r.g1)||0, g2: Number(r.g2)||0, g3: Number(r.g3)||0,
+      max, handicap: hd, total: max + hd,
+    };
+  }).sort((a,b)=> b.total - a.total || b.max - a.max);
+  personal.forEach((p,i)=> p.rank = i+1);
+
+  // チーム
+  const teams = c.teams.map((mems,i)=>{
+    let sum = 0, cnt = 0;
+    mems.forEach(mid=>{
+      const r = c.results[mid] || {};
+      const hd = c.handicaps[mid] ?? 0;
+      for(const g of ["g2","g3"]){
+        const v = Number(r[g]);
+        if(!isNaN(v) && v>0){ sum += v + hd; cnt++; }
+      }
+    });
+    const avg = cnt ? Math.round((sum/cnt)*10)/10 : 0;
+    return { idx:i+1, members:mems, count:mems.length, avg, gamesCounted:cnt };
+  }).sort((a,b)=> b.avg - a.avg);
+  teams.forEach((t,i)=> t.rank = i+1);
+
+  return { personal, teams };
+}
+function renderResult(){
+  const c = DB.data.current;
+  if(!c || !c.started){
+    return `
+      <div class="card">
+        <h2>🏆 結果</h2>
+        <div class="empty">大会がまだ開始されていません。</div>
+        <button class="btn" onclick="setTab('setup')">⚙️ 大会設定へ</button>
+      </div>`;
+  }
+  const { personal, teams } = calcResults(c);
+  const rankBadge = r => `<span class="rank-badge ${r===1?'g':r===2?'s':r===3?'b':''}">${r}</span>`;
+  const rowClass = r => r===1?'rank1':r===2?'rank2':r===3?'rank3':'';
+  const personalRows = personal.map(p=>`
+    <tr class="${rowClass(p.rank)}">
+      <td>${rankBadge(p.rank)}</td>
+      <td style="text-align:left">${esc(p.name)}</td>
+      <td class="num">${p.max}</td>
+      <td class="num">${p.handicap}</td>
+      <td class="num" style="color:var(--primary)">${p.total}</td>
+    </tr>`).join("");
+  const teamRows = teams.map(t=>`
+    <tr class="${rowClass(t.rank)}">
+      <td>${rankBadge(t.rank)}</td>
+      <td>チーム${t.idx}</td>
+      <td class="num">${t.count}</td>
+      <td class="num" style="color:var(--primary)">${t.avg}</td>
+    </tr>`).join("");
+  return `
+    <div class="card">
+      <h2>🏆 結果</h2>
+      <div class="small">${esc(c.name||"（無題の大会）")} ／ ${esc(fmtDate(c.date))}</div>
+    </div>
+
+    <div class="card">
+      <h2>👤 個人順位</h2>
+      <table>
+        <thead><tr><th>順位</th><th style="text-align:left">名前</th><th>MAX</th><th>ハンデ</th><th>ハンデ込</th></tr></thead>
+        <tbody>${personalRows || `<tr><td colspan="5" class="empty">データなし</td></tr>`}</tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>👥 チーム順位</h2>
+      <table>
+        <thead><tr><th>順位</th><th>チーム</th><th>人数</th><th>2G・3G平均<br><span class="small">(ハンデ込)</span></th></tr></thead>
+        <tbody>${teamRows || `<tr><td colspan="4" class="empty">データなし</td></tr>`}</tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>💾 大会を保存</h2>
+      <div class="small">保存すると履歴に追加され、次回大会のハンデ計算に反映されます。</div>
+      <div style="height:8px"></div>
+      <button class="btn accent" onclick="saveTournament()">✅ この大会を確定・保存する</button>
+      <div style="height:8px"></div>
+      <button class="btn gray" onclick="setTab('score')">📝 スコア入力へ戻る</button>
+    </div>
+  `;
+}
+function saveTournament(){
+  const c = DB.data.current;
+  if(!c) return;
+  if(!confirm("大会を保存しますか？（保存後は履歴で確認できます）")) return;
+  const saved = JSON.parse(JSON.stringify(c));
+  saved.savedAt = Date.now();
+  // 個人スコアに handicap を残す
+  saved.participants.forEach(mid=>{
+    if(!saved.results[mid]) saved.results[mid]={};
+    saved.results[mid].handicap = c.handicaps[mid] ?? 0;
+  });
+  DB.data.tournaments.push(saved);
+  DB.data.current = null;
+  DB.save();
+  alert("大会を保存しました！");
+  setTab("history");
+}
+
+// ---------- 描画：履歴 ----------
+function renderHistory(){
+  const list = DB.data.tournaments.slice().sort((a,b)=> (b.date||"").localeCompare(a.date||""));
+  if(list.length===0){
+    return `<div class="card"><h2>📚 大会履歴</h2><div class="empty">まだ保存された大会はありません。</div></div>`;
+  }
+  const items = list.map(t=>{
+    const { personal, teams } = calcResults(t);
+    const top = personal.slice(0,3).map(p=> `${p.rank}位 ${esc(p.name)}(${p.total})`).join(" / ");
+    const topTeam = teams.slice(0,1).map(x=> `1位 チーム${x.idx}(${x.avg})`).join("");
+    return `
+      <details>
+        <summary>${esc(t.name||"（無題）")} <span class="small">/ ${esc(fmtDate(t.date))} / ${t.participants.length}人</span></summary>
+        <div class="small" style="margin-bottom:6px">🏅 個人：${top || "—"}</div>
+        <div class="small" style="margin-bottom:6px">🏆 チーム：${topTeam || "—"}</div>
+        <table>
+          <thead><tr><th>順位</th><th style="text-align:left">名前</th><th>1G</th><th>2G</th><th>3G</th><th>MAX</th><th>HD</th><th>計</th></tr></thead>
+          <tbody>${personal.map(p=>`
+            <tr>
+              <td>${p.rank}</td>
+              <td style="text-align:left">${esc(p.name)}</td>
+              <td class="num">${p.g1||"-"}</td>
+              <td class="num">${p.g2||"-"}</td>
+              <td class="num">${p.g3||"-"}</td>
+              <td class="num">${p.max||"-"}</td>
+              <td class="num">${p.handicap}</td>
+              <td class="num">${p.total}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+        <div style="margin-top:8px" class="row">
+          <button class="btn sm ghost" onclick="deleteTournament('${t.id}')">🗑 この大会を削除</button>
+        </div>
+      </details>
+    `;
+  }).join("");
+  return `
+    <div class="card"><h2>📚 大会履歴 (${list.length}件)</h2>${items}</div>
+  `;
+}
+function deleteTournament(id){
+  const t = DB.data.tournaments.find(x=>x.id===id);
+  if(!t) return;
+  if(!confirm(`「${t.name||"（無題）"}」を削除しますか？`)) return;
+  DB.data.tournaments = DB.data.tournaments.filter(x=>x.id!==id);
+  DB.save(); render();
+}
+
+// ---------- 選手詳細 ----------
+function showPlayerDetail(mid){
+  const m = DB.data.members.find(x=>x.id===mid);
+  if(!m) return;
+  const past = DB.data.tournaments
+    .filter(t=> t.results && t.results[mid])
+    .sort((a,b)=> (b.date||"").localeCompare(a.date||""));
+  const rows = past.map(t=>{
+    const r = t.results[mid];
+    const scores = ["g1","g2","g3"].map(g=>Number(r[g])).filter(v=>!isNaN(v)&&v>0);
+    const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length*10)/10 : "-";
+    return `<tr>
+      <td>${esc(fmtDate(t.date))}</td>
+      <td style="text-align:left">${esc(t.name||"—")}</td>
+      <td class="num">${r.g1||"-"}</td>
+      <td class="num">${r.g2||"-"}</td>
+      <td class="num">${r.g3||"-"}</td>
+      <td class="num">${avg}</td>
+      <td class="num">${r.handicap ?? "-"}</td>
+    </tr>`;
+  }).join("");
+  const hd = calcHandicap(mid);
+  openModal(`
+    <h3>${esc(m.name)} さんの成績</h3>
+    <div class="small">現在のハンデ：<b>${hd.handicap}</b> ／ 直近${hd.games}ゲーム平均：${hd.avg??"—"}</div>
+    <div class="divider"></div>
+    ${past.length===0 ? `<div class="empty">過去成績はまだありません。</div>` :`
+      <table>
+        <thead><tr><th>日付</th><th style="text-align:left">大会</th><th>1G</th><th>2G</th><th>3G</th><th>平均</th><th>HD</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`}
+    <div style="height:12px"></div>
+    <button class="btn ghost" onclick="closeModal()">閉じる</button>
+  `);
+}
+
+// ---------- 全体描画 ----------
+function render(){
+  const app = $("#app");
+  let html = "";
+  switch(currentTab){
+    case "home":    html = renderHome(); break;
+    case "members": html = renderMembers(); break;
+    case "setup":   html = renderSetup(); break;
+    case "score":   html = renderScore(); break;
+    case "result":  html = renderResult(); break;
+    case "history": html = renderHistory(); break;
+    default: html = renderHome();
+  }
+  app.innerHTML = html;
+}
+
+// ---------- 初期化 ----------
+DB.load();
+setTab("home");
+
+// ---------- Service Worker ----------
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("service-worker.js").catch(err=>console.warn("SW登録失敗", err));
+  });
+}
+
+// グローバル公開（onclick から呼ぶため）
+window.addMember = addMember;
+window.removeMember = removeMember;
+window.toggleParticipant = toggleParticipant;
+window.applyTeamCount = applyTeamCount;
+window.autoSplitTeams = autoSplitTeams;
+window.moveMemberTeam = moveMemberTeam;
+window.assignToNextTeam = assignToNextTeam;
+window.startTournament = startTournament;
+window.resetCurrent = resetCurrent;
+window.updateCurrent = updateCurrent;
+window.setScore = setScore;
+window.saveTournament = saveTournament;
+window.showPlayerDetail = showPlayerDetail;
+window.deleteTournament = deleteTournament;
+window.closeModal = closeModal;
+window.setTab = setTab;
+</script>
+</body>
+</html>
